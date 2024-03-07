@@ -7,12 +7,9 @@ edition = "2021"
 
 [dependencies]
 base64 = "0.22.0"
-futures = "0.3.30"
 lazy_static = "1.4.0"
 pnet = "0.34.0"
-# packet = "0.1.4"
 thiserror = "1.0.56"
-tokio = { version = "1.35.1", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 zip = "0.6.6"
