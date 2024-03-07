@@ -1,0 +1,15 @@
+{
+    "name": "rwctf-tbox-solve",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "FittenTech.Fitten-Code",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    }
+}

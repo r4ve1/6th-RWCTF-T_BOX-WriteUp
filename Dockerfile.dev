@@ -1,0 +1,32 @@
+FROM ubuntu:22.04
+
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y wget gcc flex bison make
+
+RUN wget https://www.tcpdump.org/release/libpcap-1.10.4.tar.gz
+RUN tar -xf libpcap-1.10.4.tar.gz
+WORKDIR /libpcap-1.10.4
+
+RUN mkdir build && cd build && ../configure LDFLAGS="-static" --enable-remote --disable-shared
+RUN cd build && make -j10
+RUN cd build && make install && cp rpcapd/rpcapd /usr/local/bin
+
+# stage 2, setup for rust development
+FROM rust:1.76-slim-buster
+
+RUN echo "[source.crates-io]" > $CARGO_HOME/config && \
+    echo "replace-with = 'mirror'" >> $CARGO_HOME/config && \
+    echo "" >> $CARGO_HOME/config && \
+    echo "[source.mirror]" >> $CARGO_HOME/config && \
+    echo 'registry = "sparse+https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/"' >> $CARGO_HOME/config
+
+# add rustfmt
+RUN rustup component add rustfmt
+
+COPY --from=0 /usr/local/bin/rpcapd /usr/local/bin/
+
+RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+RUN apt update && apt install -y apt-transport-https ca-certificates
+
+RUN sed -i 's/http:\/\//https:\/\//g' /etc/apt/sources.list
+RUN apt update && apt install -y tcpdump

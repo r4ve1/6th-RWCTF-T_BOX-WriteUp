@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  dev:
+    build: .
+    environment:
+      RUST_BACKTRACE: full
+      RUSTFLAGS: '-C target-feature=+crt-static'
+    privileged: true
+    ports:
+      - 2002:2002
+      - 2003:2003
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    volumes:
+      - .:/workspace
+      - target:/workspace/target
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: sleep infinity
+
+volumes:
+  target:
+  cargo-registry:
+  cargo-git:
